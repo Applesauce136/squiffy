@@ -98,9 +98,8 @@
                 else if (options.write) {
                     fs.createReadStream(jQueryPath).pipe(fs.createWriteStream(path.join(outputPath, 'jquery.min.js')));
                 }
-                
-                htmlData = htmlData.replace('<!-- JQUERY -->', jqueryJs);
-
+		htmlData = htmlData.replace('<!-- JQUERY -->', jqueryJs);
+				
                 var scriptData = _.map(story.scripts, function (script) { return '<script src=\'{0}\'></script>'.format(script); }).join('\n');
                 htmlData = htmlData.replace('<!-- SCRIPTS -->', scriptData);
 
@@ -159,15 +158,6 @@
             var outputJsFile = [];
             outputJsFile.push(jsData);
             outputJsFile.push('\n\n');
-            outputJsFile.push(`
-<script type="text/javascript">
-     URL_START = "http://xxxx.com"; 
-</script>    
-
-<script src="https://sites.google.com/site/themunsonsapps/mtg/autocard.js" type="text/javascript">
-  
-</script>
-`);
             if (!story.start) {
                 story.start = Object.keys(story.sections)[0];
             }
@@ -299,6 +289,7 @@
                     passage = section.addPassage(match.passage[1], lineCount);
                     textStarted = false;
                 }
+		
                 else if (match.continue) {
                     ensureSectionExists();
                     autoSectionCount++;
@@ -454,7 +445,16 @@
             links = this.allMatchesForGroup(input, unnamedPassageLinkRegex, 1);
             this.checkPassageLinks(story, links, section, passage);
 
-            input = input.replace(unnamedPassageLinkRegex, '<a href="http://gatherer.wizards.com/Pages/Card/Details.aspx?name=Goblin+Lackey$1" class="squiffy-link link-passage" data-passage="$1" role="link" tabindex="0">$1</a>$2');
+            input = input.replace(unnamedPassageLinkRegex, '<a class="squiffy-link link-passage" data-passage="$1" role="link" tabindex="0">$1</a>$2');
+
+            // mtgLinkRegex matches:
+            //   open ((
+            //   any text - the link text
+            //   closing ))
+            //   no bracket after
+            var mtgLinkRegex = /\(\((.*?)\)\)([^\(]|$)/g;
+
+            input = input.replace(mtgLinkRegex, '<a href="http://gatherer.wizards.com/Pages/Card/Details.aspx?name=$1" class="mtgcard" target="_blank">$1</a>$2');
 
             return marked(input).trim();
         };
