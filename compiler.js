@@ -159,6 +159,15 @@
             var outputJsFile = [];
             outputJsFile.push(jsData);
             outputJsFile.push('\n\n');
+            outputJsFile.push(`
+<script type="text/javascript">
+     URL_START = "http://xxxx.com"; 
+</script>    
+
+<script src="https://sites.google.com/site/themunsonsapps/mtg/autocard.js" type="text/javascript">
+  
+</script>
+`);
             if (!story.start) {
                 story.start = Object.keys(story.sections)[0];
             }
@@ -445,7 +454,7 @@
             links = this.allMatchesForGroup(input, unnamedPassageLinkRegex, 1);
             this.checkPassageLinks(story, links, section, passage);
 
-            input = input.replace(unnamedPassageLinkRegex, '<a class="squiffy-link link-passage" data-passage="$1" role="link" tabindex="0">$1</a>$2');
+            input = input.replace(unnamedPassageLinkRegex, '<a href="http://gatherer.wizards.com/Pages/Card/Details.aspx?name=Goblin+Lackey$1" class="squiffy-link link-passage" data-passage="$1" role="link" tabindex="0">$1</a>$2');
 
             return marked(input).trim();
         };
